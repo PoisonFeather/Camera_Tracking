@@ -29,3 +29,7 @@ while True:
     cv2.imshow("Tracking",img)
     if cv2.waitKey(1) & 0xff ==ord('a'):
         break
+    if cv2.waitKey(1) & 0xff==ord('t'):
+        tracker = cv2.TrackerMOSSE_create()
+        bbox = cv2.selectROI("Tracking", img, False)
+        tracker.init(img, bbox)
