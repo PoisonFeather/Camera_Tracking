@@ -2,8 +2,9 @@ import cv2
 print("Starting")
 
 cap = cv2.VideoCapture(0)
-tracker = cv2.TrackerMOSSE_create()
-#tracker = cv2.TrackerCRST_create()
+#tracker = cv2.TrackerMOSSE_create()
+#tracker = cv2.TrackerMedianFlow_create()
+tracker =  cv2.TrackerBoosting_create()
 succes, img = cap.read()
 bbox=cv2.selectROI("Tracking",img,False)
 tracker.init(img,bbox)
