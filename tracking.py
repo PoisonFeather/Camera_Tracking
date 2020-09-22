@@ -3,11 +3,12 @@ import serial
 import time
 print("starting serial connection ...")
 s = serial.Serial('COM4',9600,timeout=.1)
+s.open()
 print("Starting")
 tracker_yes=False
 panAngle=90
 #s.write(90)
-cap = cv2.VideoCapture(0)
+cap = cv2.VideoCapture(0,cv2.CAP_DSHOW)
 succes, img = cap.read()
 #tracker = cv2.TrackerMOSSE_create()
 #tracker = cv2.TrackerCRST_create()
@@ -29,15 +30,15 @@ def drawBox(img,bbox):
 def mapServoPosition (x):
     global panAngle
     if (x < int((window_width/2)-75)):
-        panAngle-=10
-        if panAngle < 9 :
-            panAngle=10
+        panAngle+=10
+        if panAngle >180 :
+            panAngle=180
         positionServo(panAngle)
         #print(panAngle)
     if (x > int(window_width/2)+75):
-        panAngle+=10
-        if panAngle > 180:
-            panAngle = 170
+        panAngle-=10
+        if panAngle < 10:
+            panAngle = 10
         positionServo(panAngle)
         #print(panAngle)
     #time.sleep(.5)
@@ -60,8 +61,8 @@ def mapServoPosition (x):
      #   panAngle=10
     
 def positionServo(pan):
-    s.write(pan)
-    time.sleep(.1)
+    print(s.write(pan))
+    
 
 
 while True:
@@ -90,3 +91,4 @@ while True:
         bbox = cv2.selectROI("Tracking", img, False)
         tracker.init(img, bbox)
         tracker_yes=True
+cv2.destroyAllWindows()
