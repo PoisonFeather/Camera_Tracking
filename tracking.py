@@ -2,8 +2,8 @@ from cv2 import cv2
 import serial
 import time
 print("starting serial connection ...")
-s = serial.Serial('COM3',9600,timeout=.1)
-
+s = serial.Serial('COM3',9600,timeout=1)
+#s.open()
 print("Starting")
 tracker_yes=False
 #s.write(90)
@@ -29,25 +29,30 @@ def drawBox(img,bbox):
 def mapServoPosition (x):
     
     if (x < int((window_width/2)-75)):
-        positionServo(str(1))
+        positionServo("+")
 
     if (x > int((window_width/2)+75)):
-        positionServo(str(2))
+        positionServo("-")
 count = 0
 def positionServo(pan):
     #encoded=0
-    global count
-    byted=bytes([int(pan)])
-    s.write(byted)
-    count=count+1
-    print(byted)
-    if count >= 1 :
-        time.sleep(0.035)
-        s.write("".encode())
+    #global count
+    #byted=bytes([int(pan)])
+    #s.write(byted)
+    #count=count+1
+    #print(byted)
+    #if count >= 1 :
+     #   time.sleep(0.035)
+      #  s.write("".encode())
         #s.write("\\".encode())
-        count=0
-        
-
+       # count=0
+    #print(pan.encode())
+    s.write(pan.encode())
+    time.sleep(0.25)  
+    if s.readline().decode('ascii') == "done":
+        pass
+    #else:
+        #print("error")
 
 while True:
     timer = cv2.getTickCount()
@@ -57,10 +62,12 @@ while True:
         bbox = cv2.selectROI("Tracking", img, False)
         tracker.init(img, bbox)
         tracker_yes = True
+        #s.close()
     if cv2.waitKey(1) & 0xff == ord('r'):
         s.write(90)
     if cv2.waitKey(1) & 0xff == ord('a'):
         cv2.destroyAllWindows()
+        s.close()
         break
     if tracker_yes:
         success,bbox = tracker.update(img)  
