@@ -44,13 +44,12 @@ void loop() {
     input = Serial.readString();
     //b'\x02'
     input.replace("b","");
-    input.replace("x","");
     input.replace("'","");
-    String replaces="\0";
-    input.replace(input[0],"");
-    
-   // input.replace('x',"");
+    input.replace("x0","");
+    input.replace("\\","");
+    input.replace(" ","");
     Serial.print("input: " + input);
+    
     int angle = input.toInt();
     int len = 0;
     //len of angle
@@ -72,7 +71,9 @@ void loop() {
     }
     Serial.print(input);
     for (int x = 0; x < len; x++) {
-      if (arr[x] == 1 ) {
+      Serial.print("arr: " + arr[x]);
+      if (arr[x] == '1' ) {
+       
         servo_count += 10;
         servo.write(servo_count);
         delay(500);
@@ -80,7 +81,7 @@ void loop() {
           servo_count = 180;
         }
       }
-      if (arr[x] == 2 ) {
+      if (arr[x] == '2' ) {
         servo_count -= 10;
         servo.write(servo_count);
         delay(500);
