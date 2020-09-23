@@ -29,25 +29,24 @@ def drawBox(img,bbox):
 def mapServoPosition (x):
     
     if (x < int((window_width/2)-75)):
-        positionServo(str(2))
+        positionServo(str(1))
 
     if (x > int((window_width/2)+75)):
-        positionServo(str(1))
+        positionServo(str(2))
 count = 0
 def positionServo(pan):
     #encoded=0
     global count
     byted=bytes([int(pan)])
     s.write(byted)
-
     count=count+1
-    time.sleep(0.1)
     print(byted)
-    if count >= 2 :
-        time.sleep(0.25)
+    if count >= 1 :
+        time.sleep(0.035)
         s.write("".encode())
+        s.write("\\".encode())
         count=0
-    
+        
 
 
 while True:
