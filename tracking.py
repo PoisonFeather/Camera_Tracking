@@ -3,10 +3,9 @@ import serial
 import time
 print("starting serial connection ...")
 s = serial.Serial('COM4',9600,timeout=.1)
-s.open()
+
 print("Starting")
 tracker_yes=False
-panAngle=90
 #s.write(90)
 cap = cv2.VideoCapture(0,cv2.CAP_DSHOW)
 succes, img = cap.read()
@@ -28,46 +27,33 @@ def drawBox(img,bbox):
 
 
 def mapServoPosition (x):
-    global panAngle
-    if (x < int((window_width/2)-75)):
-        panAngle+=10
-        if panAngle >180 :
-            panAngle=180
-        positionServo(panAngle)
-        #print(panAngle)
-    if (x > int(window_width/2)+75):
-        panAngle-=10
-        if panAngle < 10:
-            panAngle = 10
-        positionServo(panAngle)
-        #print(panAngle)
-    #time.sleep(.5)
-    #panAngle=x
     
-    #if (x < (width_camera/2)-75):
-     #   panAngle += 10
-      #  if panAngle > 170:
-       #     panAngle = 170
-       # positionServo (panAngle)
-       # print(panAngle)
-    #if (x > (width_camera/2)+75):
-     #   panAngle -= 10
-      #  if panAngle < 10:
-       #     panAngle = 10
-        #positionServo (panAngle)
-        #print(panAngle)
+    if (x < int((window_width/2)-75)):
+        positionServo("1")
 
-    #if x <10:
-     #   panAngle=10
+    if (x > int(window_width/2)+75):
+        positionServo("0")
     
 def positionServo(pan):
-    print(s.write(pan))
+    s.write(pan.encode())
+    print(s.read())
+    #print(pan.encode())
     
 
 
 while True:
     timer = cv2.getTickCount()
     success,img=cap.read()
+    if cv2.waitKey(1) & 0xff == ord('t'):
+        tracker = cv2.TrackerMOSSE_create()
+        bbox = cv2.selectROI("Tracking", img, False)
+        tracker.init(img, bbox)
+        tracker_yes = True
+    if cv2.waitKey(1) & 0xff == ord('r'):
+        s.write(90)
+    if cv2.waitKey(1) & 0xff == ord('a'):
+        cv2.destroyAllWindows()
+        break
     if tracker_yes:
         success,bbox = tracker.update(img)  
         if success :
@@ -81,14 +67,8 @@ while True:
     cv2.line(img,(int(window_width/2-75),0),(int(window_width/2-75),int(window_height)),(255,0,75),2)
     cv2.line(img,(int(window_width/2+75),0),(int(window_width/2+75),int(window_height)),(255,0,75),2)
     cv2.imshow("Tracking",img)
+
+cv2.destroyAllWindows() 
+s.close() 
     
-    if cv2.waitKey(1) & 0xff== ord('r'):
-        s.write(90)
-    if cv2.waitKey(1) & 0xff == ord('a'):
-        break
-    if cv2.waitKey(1) & 0xff== ord('t'):
-        tracker = cv2.TrackerMOSSE_create()
-        bbox = cv2.selectROI("Tracking", img, False)
-        tracker.init(img, bbox)
-        tracker_yes=True
-cv2.destroyAllWindows()
+

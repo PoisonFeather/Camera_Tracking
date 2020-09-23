@@ -1,8 +1,10 @@
 #include <Servo.h>
 
-int input;
 Servo servo;
 int led = 2;
+int servo_count = 90;
+String input;
+
 void setup() {
   // put your setup code here, to run once:
   //Sservo.attach(9);
@@ -11,38 +13,50 @@ void setup() {
   // calibrare
   //Serial.println("calibrating...");
 
-  
-  for(int i=0; i<180;i++){
-      servo.write(i);
+
+  for (int i = 0; i < 180; i++) {
+    servo.write(i);
     //  Serial.print(" " + i);
-      delay(10);
-    }
-  for(int i=180; i>0;i--){
-      servo.write(i);
-      delay(10);
-    }
+    delay(10);
+  }
+  for (int i = 180; i > 0; i--) {
+    servo.write(i);
+    delay(10);
+  }
   //Serial.println("Done calibrating...");
-  for(int i=0;i<=90;i++){
-      servo.write(i);
-      
-      Serial.print(".");
-      delay(5);
-    }
-   //Serial.println();
+  for (int i = 0; i <= 90; i++) {
+    servo.write(i);
+
+    Serial.print(".");
+    delay(5);
+  }
+  //Serial.println();
 }
 
 void loop() {
-  // put your main code here, to run repeatedly:
-  if(Serial.available()>0){
-     if(servo.attached()!= true){
-      servo.attach(9);
-     }
-      input = Serial.parseInt();
-      input = int(input);
-      servo.write(input);
-      //Serial.println("servo: "+ servo.read());
+  // put your main code here, to run repeatedly
+  if (servo.attached() != true) {
+    servo.attach(9);
+  }
+  if (Serial.available()) {
+    //Serial.write(Serial.read());
+     input = Serial.readString();
+     int angle=input.toInt();
+     Serial.print(input);
+    if (angle == 1 ) {
+      servo_count += 10;
+      servo.write(servo_count);
+      delay(30);
+      servo.write(servo_count);
     }
-  else{
-      servo.detach();
+    else {
+      if (angle == 0 ) {
+        servo_count -= 10;
+        servo.write(servo_count);
+        delay(30);
+        servo.write(servo_count);
+      }
     }
+    //Serial.println("servo: "+ servo.read());
+  }
 }
