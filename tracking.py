@@ -44,7 +44,7 @@ def positionServo(pan):
     if count >= 1 :
         time.sleep(0.035)
         s.write("".encode())
-        s.write("\\".encode())
+        #s.write("\\".encode())
         count=0
         
 
