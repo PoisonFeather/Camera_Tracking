@@ -11,6 +11,7 @@ void setup() {
   Serial.begin(9600);
   servo.attach(9);
   bool nu_mai_vrem_calibrare = false;
+  
   // calibrare
   //Serial.println("calibrating...");
   if (nu_mai_vrem_calibrare == false) {
@@ -18,11 +19,11 @@ void setup() {
     for (int i = 0; i < 180; i++) {
       servo.write(i);
       //  Serial.print(" " + i);
-      delay(25);
+      delay(15);
     }
     for (int i = 180; i > 0; i--) {
       servo.write(i);
-      delay(25);
+      delay(15);
     }
     //Serial.println("Done calibrating...");
     for (int i = 0; i <= 90; i++) {
