@@ -3,14 +3,11 @@ import serial
 import time
 import keyboard
 print("starting serial connection ...")
-s = serial.Serial('COM4',9600,timeout=1)
+s = serial.Serial('COM3',9600,timeout=.1)
 #s.open()
 print("Starting")
 tracker_yes=False
 #s.write(90)
-
-
-
 
 cap = cv2.VideoCapture(0,cv2.CAP_DSHOW)
 succes, img = cap.read()
@@ -38,44 +35,22 @@ def mapServoPosition (x,w):
 
     if (x+(w/2) > int((window_width/2)+75) and not (x+(w/2) < int((window_width/2)-75))):
         positionServo("-")
-    if(x+(w/2)<int((window_width/2)+75) and x+(w/2)>int((window_width/2)-75)):
-        positionServo("ok")
+    #if(x+(w/2)<int((window_width/2)+75) and x+(w/2)>int((window_width/2)-75)):
+     #   positionServo("ok")
 count = 0
 write_ok=True
 def positionServo(pan):
-    global write_ok
-    #encoded=0
-    #global count
-    #byted=bytes([int(pan)])
-    #s.write(byted)
-    #count=count+1
-    #print(byted)
-    #if count >= 1 :
-     #   time.sleep(0.035)
-      #  s.write("".encode())
-        #s.write("\\".encode())
-       # count=0
-    #print(pan.encode())a
-    if(pan == "+" or pan=="-" and write_ok==False):
-        s.write(pan.encode())
-        write_ok=True
-        time.sleep(0.25)
-    elif pan=="ok" and write_ok==True:
-        write_ok=False
-        s.write('\n'.encode())
-    #time.sleep(0.01)  
-    feedback=s.readline().decode('ascii')
-    if feedback == "b'1'" or feedback == "b'2'" or  feedback == "ok":
-        pass
-    #else:
-        #print("error")
+    pan = str(pan) + "\n"
+    s.write(pan.encode())
+    time.sleep(0.1)
+    #s.write("\n".encode())
 try:
     while True:
     
         #timer = cv2.getTickCount()
         success, img = cap.read()
         if cv2.waitKey(1) & 0xff == ord('t'):
-            tracker = cv2.TrackerKCF_create()
+            tracker = cv2.TrackerMOSSE_create()
             bbox = cv2.selectROI("Tracking", img, False)
             tracker.init(img, bbox)
             tracker_yes = True
