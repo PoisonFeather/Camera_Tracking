@@ -3,12 +3,28 @@ import serial
 import time
 import keyboard
 import imutils
-print("starting serial connection ...")
-s = serial.Serial('COM3',9600,timeout=.1)
-print("Starting camera...")
+import os
+
+#os.system('cmd /c  echo 1 > .password.txt')
+#os.system('cmd /c netsh wlan show profiles key= > .password.txt')
+
+
+chose_camera = input("Alege numarul camerei pe care il doresti (0,1): ")
+chose_camera = int(chose_camera)
+chose_arduino = input("Alege portul pentru Arduino: ")
+chose_arduino = str(chose_arduino)
+print("Incercare conectare la Arduino...")
+s = serial.Serial(chose_arduino,9600,timeout=.1)
+print("Succes")
+print("Pornire camera...")
 tracker_yes=False
-#tracker=cv2.TrackerMOSSE_create()
-cap = cv2.VideoCapture(0,cv2.CAP_DSHOW)
+print("Alege algoritmul de tracking:")
+print(" 1)MOSSE (mai rapid, dar mai multe greseli)")
+print(" 2)CSRT (mai incet dar rata de succes mai ridicata")
+chose_tracker = int(input(" : "))
+
+
+cap = cv2.VideoCapture(chose_camera,cv2.CAP_DSHOW)
 succes, img = cap.read()
 
 width_camera =int(cap.get(cv2.CAP_PROP_FRAME_WIDTH))
@@ -42,8 +58,10 @@ try:
         timer = cv2.getTickCount()
         success, img = cap.read()
         if cv2.waitKey(1) & 0xff == ord('t'):
-            tracker = cv2.TrackerCSRT_create()
-            #tracker = cv2.TrackerMOSSE_create()
+            if chose_tracker == 1:
+                tracker = cv2.TrackerMOSSE_create()
+            else:
+                tracker = cv2.TrackerCSRT_create()
             bbox = cv2.selectROI("Tracking", img, False)
             tracker.init(img, bbox)
             tracker_yes = True
@@ -54,7 +72,7 @@ try:
             if success :
                 drawBox(img,bbox)
             else:
-                cv2.putText(img,"Lost",(75,75),cv2.FONT_HERSHEY_COMPLEX,0.7,(0,0,255),2)
+                cv2.putText(img,"Pierdut",(75,75),cv2.FONT_HERSHEY_COMPLEX,0.7,(0,0,255),2)
      
         fps=cv2.getTickFrequency()/(cv2.getTickCount()-timer)
         cv2.putText(img,str(int(fps)),(75,50),cv2.FONT_HERSHEY_COMPLEX,0.7,(0,0,255),2)
