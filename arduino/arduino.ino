@@ -9,7 +9,7 @@ void setup() {
   //Sservo.attach(9);
   Serial.begin(9600);
   servo.attach(9);
-  bool nu_mai_vrem_calibrare = true;
+  bool nu_mai_vrem_calibrare = false;
   
   if (nu_mai_vrem_calibrare == false) {
 
