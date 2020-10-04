@@ -92,7 +92,7 @@ except KeyboardInterrupt:
     s.close() 
     exit()
     
-cv2.destroyAllWindows() 
-s.close() 
-exit()
+#cv2.destroyAllWindows() 
+##s.close() 
+#exit()
    
