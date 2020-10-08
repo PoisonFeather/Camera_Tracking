@@ -21,7 +21,12 @@ choose_arduino = input("Alege portul pentru Arduino: ")
 choose_arduino = str(choose_arduino)
 print("Incercare conectare la Arduino...")
 s = serial.Serial(choose_arduino,9600,timeout=.1)
-s.write("begin".encode())
+choose_calibrare = input("Doresti ca servomotorul sa se calibreze?")
+choose_calibrare=str(choose_calibrare)
+if choose_calibrare == "da":
+    s.write("yes\n".encode())
+else:
+    s.write("no\n".encode())
 print("Succes")
 print("Pornire camera...")
 tracker_yes=False

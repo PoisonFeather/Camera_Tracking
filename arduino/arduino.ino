@@ -10,8 +10,12 @@ void setup() {
   Serial.begin(9600);
   servo.attach(9);
   bool nu_mai_vrem_calibrare = false;
-  
-  if (nu_mai_vrem_calibrare == false) {
+
+  if (Serial.available() > 0) {
+    String calibrare = Serial.readStringUntil('\n');
+    if (calibrare == "yes") nu_mai_vrem_calibrare = true;
+    else nu_mai_vrem_calibrare = false;
+    if (nu_mai_vrem_calibrare == false) {
 
     for (int i = 0; i < 180; i++) {
       servo.write(i);
@@ -32,30 +36,31 @@ void setup() {
   }
   servo.write(90);
   //Serial.println();
+  }
 }
 
 void loop() {
   //digitalWrite(9,LOW);
   // put your main code here, to run repeatedly
-  if(servo.attached() != true){
-      servo.attach(9);
+  if (servo.attached() != true) {
+    servo.attach(9);
+  }
+  if (Serial.available() > 0) {
+    delay(25);
+    input = Serial.readStringUntil('\n');
+    //input=input.toInt();
+    if (input == "+" ) {
+      servo_count += 5;
+      servo.write(servo_count);
+      if (servo_count > 180) servo_count = 180;
     }
-  if (Serial.available()>0) {
-      delay(25);
-      input=Serial.readStringUntil('\n');
-      //input=input.toInt();
-      if(input == "+" ){
-        servo_count+=5;
-        servo.write(servo_count);
-        if(servo_count >180) servo_count=180;
-      }
-      if(input == "-"){
-          servo_count-=5;
-          servo.write(servo_count);
-          if(servo_count<10) servo_count=10;
-        }
+    if (input == "-") {
+      servo_count -= 5;
+      servo.write(servo_count);
+      if (servo_count < 10) servo_count = 10;
+    }
     Serial.flush();
-  }else{
+  } else {
     servo.detach();
-    }
+  }
 }
