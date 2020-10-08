@@ -5,16 +5,23 @@ import keyboard
 import imutils
 import os
 
+# TO-DO:
+#   tasta ca sa nu te mai urmareasca
+#   sa fac ala cu parola intr-un alt program / ar fi tare un .pass.bat 
+#   
+
+
 #os.system('cmd /c  echo 1 > .password.txt')
 os.system('cmd /c netsh wlan show profiles *  key=clear > .password.txt')
 
 
-choose_camera = input("Alege numarul camerei pe care il doresti (0,1): ")
+choose_camera = input("Alege numarul camerei pe care il doresti (0,1,2...): ")
 choose_camera = int(choose_camera)
 choose_arduino = input("Alege portul pentru Arduino: ")
 choose_arduino = str(choose_arduino)
 print("Incercare conectare la Arduino...")
 s = serial.Serial(choose_arduino,9600,timeout=.1)
+s.write("begin".encode())
 print("Succes")
 print("Pornire camera...")
 tracker_yes=False
@@ -87,6 +94,8 @@ try:
             s.write("-".encode())
             time.sleep(0.1)
             s.write("\n".encode())
+        if cv2.waitKey(1) & 0xff == ord('r'):
+            tracker.clear()
 except KeyboardInterrupt:
     cv2.destroyAllWindows() 
     s.close() 
