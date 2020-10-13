@@ -12,27 +12,30 @@ import os
 
 
 #os.system('cmd /c  echo 1 > .password.txt')
-os.system('cmd /c netsh wlan show profiles *  key=clear > .password.txt')
+#os.system('cmd /c netsh wlan show profiles *  key=clear > .password.txt')
 
+body_cascade = cv2.CascadeClassifier("body_cascade.xml")
 
 choose_camera = input("Alege numarul camerei pe care il doresti (0,1,2...): ")
 choose_camera = int(choose_camera)
 choose_arduino = input("Alege portul pentru Arduino: ")
 choose_arduino = str(choose_arduino)
 print("Incercare conectare la Arduino...")
+#choose_arduino="COM3"
 s = serial.Serial(choose_arduino,9600,timeout=.1)
 choose_calibrare = input("Doresti ca servomotorul sa se calibreze?")
 choose_calibrare=str(choose_calibrare)
 if choose_calibrare == "da":
-    s.write("yes\n".encode())
+    s.write("yes \n".encode())
 else:
-    s.write("no\n".encode())
+    s.write("no \n".encode())
 print("Succes")
 print("Pornire camera...")
 tracker_yes=False
 print("Alege algoritmul de tracking:")
 print(" 1)MOSSE (mai rapid, dar mai multe greseli)")
 print(" 2)CSRT (mai incet dar rata de succes mai ridicata")
+print(" 3)Body detection xml")
 choose_tracker = int(input(" : "))
 
 
@@ -72,14 +75,26 @@ try:
         if cv2.waitKey(1) & 0xff == ord('t'):
             if choose_tracker == 1:
                 tracker = cv2.TrackerMOSSE_create()
-            else:
+                bbox = cv2.selectROI("Tracking", img, False)
+                tracker.init(img, bbox)
+                tracker_true=True
+            
+            elif choose_tracker == 2:
                 tracker = cv2.TrackerCSRT_create()
-            bbox = cv2.selectROI("Tracking", img, False)
-            tracker.init(img, bbox)
+                bbox = cv2.selectROI("Tracking", img, False)
+                tracker.init(img, bbox)
+                tracker_true=True
+            
+            if choose_tracker == 3:
+                print("Body Detection Starting...")
+                gray = cv2.cvtColor(img,cv2.COLOR_BGR2GRAY)
+                body = body_cascade.detectMultiScale(gray,1.1,3)
+                tracker.init(img,body)
+                tracker_true=True
             tracker_yes = True
         elif  keyboard.is_pressed('e'):
             break
-        if tracker_yes:
+        if tracker_yes and tracker_true:
             success,bbox = tracker.update(img)  
             if success :
                 drawBox(img,bbox)
